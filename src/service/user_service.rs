@@ -1,8 +1,3 @@
-use rbatis::crud::CRUD;
-use rbatis::plugin::page::{Page, PageRequest};
-
-use rbatis::wrapper::Wrapper;
-
 use crate::config::BOOT_CONFIG;
 use crate::core::Error;
 use crate::core::Result;
@@ -18,6 +13,8 @@ use crate::util::jwt_util::JWTToken;
 use crate::util::password_encoder::PasswordEncoder;
 use crate::util::rand_util::RandUtil;
 use crate::util::verify_code::{VcType, VerifyCode};
+use rbatis::sql::Page;
+use rbatis::sql::PageRequest;
 use validator::Validate;
 /// 用户服务
 pub struct UserService {}
@@ -35,10 +32,8 @@ impl UserService {
         {
             return Err(Error::from("验证码错误!"));
         }
-        let w = Wrapper::new(&RB.driver_type()?)
-            .eq("username", &arg.username)
-            .check()?;
-        let user: Option<TmUser> = RB.fetch_by_wrapper("", &w).await?;
+        let user =
+            TmUser::select_by_username(&mut RB.clone(), &arg.username.as_ref().unwrap()).await?;
         if user.is_none() {
             return Err(Error::from(format!(
                 "用户:{} 不存在!",
@@ -88,10 +83,8 @@ impl UserService {
             return Err(Error::from("验证码错误!"));
         }
 
-        let w = Wrapper::new(&RB.driver_type()?)
-            .eq("username", &arg.username)
-            .check()?;
-        let user: Option<TmUser> = RB.fetch_by_wrapper("", &w).await?;
+        let user =
+            TmUser::select_by_username(&mut RB.clone(), &arg.username.as_ref().unwrap()).await?;
         match user {
             Some(_) => {
                 return Err(Error::from("用户已存在!"));
@@ -107,7 +100,7 @@ impl UserService {
             &salt,
         ));
         user.salt = Some(salt);
-        let res = RB.save("", &user).await?;
+        let res = TmUser::insert(&mut RB.clone(), &user).await?;
         Ok(res.rows_affected)
     }
 
@@ -122,10 +115,8 @@ impl UserService {
         {
             return Err(Error::from("验证码错误!"));
         }
-        let w = Wrapper::new(&RB.driver_type()?)
-            .eq("username", &arg.username)
-            .check()?;
-        let user: Option<TmUser> = RB.fetch_by_wrapper("", &w).await?;
+        let user =
+            TmUser::select_by_username(&mut RB.clone(), arg.username.as_ref().unwrap()).await?;
         if user.is_none() {
             return Err(Error::from(format!(
                 "用户:{} 不存在!",
@@ -147,14 +138,15 @@ impl UserService {
             &salt,
         ));
         user.salt = Some(salt);
-        let i = RB.update_by_wrapper("", &user, &w, true).await?;
+        let i =
+            TmUser::update_by_username(&mut RB.clone(), &user, &user.username.as_ref().unwrap())
+                .await?
+                .rows_affected;
         return Ok(i == 1);
     }
 
     pub async fn page(&self, arg: &UserPageDTO) -> Result<Page<TmUser>> {
-        let w = Wrapper::new(&RB.driver_type()?);
         let page_req = PageRequest::new(arg.page.unwrap_or(1), arg.size.unwrap_or(10));
-        let data: Page<TmUser> = RB.fetch_page_by_wrapper("", &w, &page_req).await?;
-        Ok(data)
+        Ok(TmUser::select_page(&mut RB.clone(), &page_req).await?)
     }
 }

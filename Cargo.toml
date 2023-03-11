@@ -2,7 +2,7 @@
 name = "rust-web-example"
 version = "0.1.0"
 authors = ["luokai <kaiv2@outlook.com>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -14,38 +14,45 @@ chrono = { version = "0.4", features = ["serde"] }
 lazy_static = "1.4.0"
 #log
 log = "0.4"
-log4rs = "0.13.0"
+log4rs = "1.2.0"
 #runtime
-tokio = { version = "0.2", features = ["full"] }
+tokio = { version = "1.26.0", features = ["full"] }
 #rbatis orm dep
-rbatis-core = { version = "1.4.2", features = ["all"]}
-rbatis =  { version = "1.4.2" }
+rbs = { version = "0.1" }
+rbatis = { version = "4.0.58" }
+rbdc-mysql = { version = "0.1", optional = true }
+rbdc-sqlite = { version = "0.1", optional = true }
 
 #web server
-actix-web = "2.0"
+actix-web = "4.3.1"
 # actix-service = "1.0"
-actix-http = "1.0"
-actix-rt = "1.0"
-actix-web-httpauth = "0.4.2"
+actix-http = "3.3.1"
+actix-rt = "2.8.0"
+actix-web-httpauth = "0.8.0"
 
 
 #redis
-redis = "0.16.0"
+redis = { version = "0.22.3", features = ["tokio-comp"] }
 
 #jwt
-jsonwebtoken = "7"
+jsonwebtoken = "8.2.0"
 #uuid
-uuid = "0.8"
+uuid = "1.3.0"
 md5 = "0.7.0"
 
 #validator
-validator = "0.10"
-validator_derive = "0.10"
+validator = "0.16.0"
+validator_derive = "0.16.0"
 
 #rand
-rand = "0.7"
+rand = "0.8.5"
 
 dotenv = "0.15.0"
-config = "0.10.1"
+config = "0.13.3"
 
 ring = "0.16.20"
+
+[features]
+default = ["sqlite"]
+mysql = ["rbdc-mysql"]
+sqlite = ["rbdc-sqlite"]

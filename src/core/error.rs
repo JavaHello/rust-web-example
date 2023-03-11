@@ -53,8 +53,8 @@ impl From<serde_json::Error> for Error {
     }
 }
 /// rbatis error
-impl From<rbatis_core::Error> for Error {
-    fn from(e: rbatis_core::Error) -> Error {
+impl From<rbatis::Error> for Error {
+    fn from(e: rbatis::Error) -> Error {
         Error::RbatisError(e.to_string())
     }
 }

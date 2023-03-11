@@ -1,5 +1,5 @@
 use chrono::{NaiveDateTime, Utc};
-use rbatis::crud::CRUDEnable;
+use rbatis::{crud, impl_select, impl_select_page, impl_update};
 use serde::{Deserialize, Serialize};
 
 ///用户表
@@ -30,7 +30,7 @@ impl TmUser {
         }
     }
 }
-
-impl CRUDEnable for TmUser {
-    type IdType = String;
-}
+crud!(TmUser {});
+impl_select!(TmUser{select_by_username(username:&str) -> Option => "`where username = #{username} limit 1`"});
+impl_update!(TmUser{update_by_username(username:&str) => "`where username = #{username}`"});
+impl_select_page!(TmUser{select_page() => "`where username = #{username}`"});

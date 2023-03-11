@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate lazy_static;
+extern crate rbatis;
 
 pub mod config;
 pub mod controller;
@@ -15,7 +16,6 @@ use crate::controller::{user_controller, verify_code_controller};
 use actix_web::middleware;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use actix_web_httpauth::middleware::HttpAuthentication;
-use log4rs;
 // use rbatis::plugin::logic_delete::RbatisLogicDeletePlugin;
 // use rbatis::rbatis::Rbatis;
 // use serde_json::json;
@@ -24,12 +24,10 @@ async fn index() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
-#[actix_rt::main]
+#[tokio::main]
 async fn main() -> std::io::Result<()> {
     //初始化日志
     log4rs::init_file("config/log4rs.yaml", Default::default()).unwrap();
-    //初始化rbatis
-    dao::RB.link(&BOOT_CONFIG.mysql_url).await.unwrap();
     //初始化路由，启动http服务
     HttpServer::new(|| {
         let auth = HttpAuthentication::bearer(mid::validator);

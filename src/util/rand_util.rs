@@ -8,7 +8,7 @@ impl RandUtil {
         let mut rng = rand::thread_rng();
         let mut r = String::new();
         for _ in 0..len {
-            let c = rng.gen_range(0, 9);
+            let c = rng.gen_range(0..9);
             r.push_str(&c.to_string());
         }
         r
@@ -21,7 +21,7 @@ impl RandUtil {
         for _ in 0..len {
             // 65 -> A
             // 97 -> a
-            let c: u8 = rng.gen_range(65, 65 + 26);
+            let c: u8 = rng.gen_range(65..(65 + 26));
             r.push(c as char);
         }
         r

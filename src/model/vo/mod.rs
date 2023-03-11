@@ -3,6 +3,7 @@ use crate::core::Result;
 use actix_web::HttpResponse;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use serde_json;
 
 mod user_vo;
 
@@ -54,7 +55,7 @@ where
         }
     }
 
-    pub fn to_json_resp(&self) -> actix_http::Response {
+    pub fn to_json_resp(&self) -> actix_web::HttpResponse {
         return HttpResponse::Ok()
             .content_type("json")
             .body(self.to_string());

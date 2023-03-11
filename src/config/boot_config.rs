@@ -33,9 +33,9 @@ impl Default for BootConfig {
 impl BootConfig {
     pub fn init() -> Self {
         dotenv().ok();
-        let mut c = Config::new();
+        let mut c = Config::default();
         c.merge(config::Environment::default())
             .expect("加载配置失败!!!");
-        c.try_into().expect("init env error")
+        c.try_deserialize().expect("init env error")
     }
 }
